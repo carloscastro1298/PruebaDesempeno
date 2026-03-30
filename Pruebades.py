@@ -1,40 +1,221 @@
 import json
 import os
 
+FILE_PATH = "students.json"
 
-FILE_PATH= "students.json" #route where customers are stored
 
+# LOAD STUDENTS
 def load_students():
- #if the file does not exist, return an empty list
-    if not os.path.exists(FILE_PATH): 
-        return[]
-    with open (FILE_PATH, "w", encoding="utf-8") as file: #open the file in write mode
-        return json.load (file)
-    with open (FILE_PATH, "r", encoding="utf-8") as file:
+    if not os.path.exists(FILE_PATH):
+        return []
+    with open(FILE_PATH, "r", encoding="utf-8") as file:
         return json.load(file)
-    
-#SAVE STUDENTS
-def save_students(student): 
-    with open(FILE_PATH, "w", encoding=utf-8) as file: #open the file in write mode
-    json.dump(students, file, ensure_ascii=False, indent=4)
 
-#REGISTER STUDENT
-def add_student():
-    students=load_students()
-    student ={
-        "id": input("ID: ")
-        "name": input("name: ")
-        "age": input("age: ")
+
+# SAVE STUDENTS
+def save_students(students):
+    with open(FILE_PATH, "w", encoding="utf-8") as file:
+        json.dump(students, file, ensure_ascii=False, indent=4)
+
+
+# FIND STUDENT BY ID
+def find_student_by_id(students, student_id):
+    for student in students:
+        if student["id"] == student_id:
+            return student
+    return None
+
+
+# REGISTER STUDENT
+def register_student(students):
+    print("===== Register Student =====")
+
+    student_id = input("Enter student ID: ").strip()
+    if student_id == "":
+        print("ID cannot be empty.")
+        return
+
+    if find_student_by_id(students, student_id):
+        print("Student with this ID already exists.")
+        return
+
+    name = input("Enter name: ").strip()
+    if name == "":
+        print("Name cannot be empty.")
+        return
+
+    age_text = input("Enter age: ").strip()
+    if not age_text.isdigit():
+        print("Age must be a number.")
+        return
+    age = int(age_text)
+
+    course = input("Enter course: ").strip()
+
+    status = input("Enter status (active/inactive): ").strip().lower()
+    if status not in ("active", "inactive"):
+        print("Invalid status.")
+        return
+
+    new_student = {
+        "id": student_id,
+        "name": name,
+        "age": age,
+        "course": course,
+        "status": status,
     }
 
-#Display the main menu.
-print("======MAIN SCHOOL======")
-print("1. Register new students: ")
-print("2. View the students list: ")
-print("3. Search for a student by ID:")
-print("4. Update student details: ")
-print("5. Remove students: ")
+    students.append(new_student)
+    save_students(students)
 
+    print("Student registered successfully.")
+
+
+# LIST STUDENTS
+def list_students(students):
+    print("===== STUDENT LIST =====")
+
+    if len(students) == 0:
+        print("No students registered.")
+        return
+
+    for student in students:
+        print(f"ID: {student['id']}")
+        print(f"Name: {student['name']}")
+        print(f"Age: {student['age']}")
+        print(f"Course: {student['course']}")
+        print(f"Status: {student['status']}")
+        print("-------------------------")
+
+
+# SEARCH STUDENT
+def search_student(students):
+    print("----- Search Student -----")
+    print("1. Search by ID")
+    print("2. Search by Name")
+
+    option = input("Choose an option: ").strip()
+
+    if option == "1":
+        student_id = input("Enter student ID: ").strip()
+        student = find_student_by_id(students, student_id)
+
+        if student:
+            print("Student found:")
+            print(student)
+        else:
+            print("Student not found.")
+
+    elif option == "2":
+        name = input("Enter name: ").strip().lower()
+        found = False
+
+        for student in students:
+            if student["name"].lower() == name:
+                print(student)
+                found = True
+
+        if not found:
+            print("Student not found.")
+    else:
+        print("Invalid option.")
+
+
+# UPDATE STUDENT
+def update_student(students):
+    print("----- Update Student -----")
+
+    student_id = input("Enter student ID: ").strip()
+    student = find_student_by_id(students, student_id)
+
+    if student is None:
+        print("Student not found.")
+        return
+
+    print("Leave blank to keep current value")
+
+    new_name = input(f"New name ({student['name']}): ").strip()
+    new_age = input(f"New age ({student['age']}): ").strip()
+    new_course = input(f"New course ({student['course']}): ").strip()
+    new_status = input(f"New status ({student['status']}): ").strip().lower()
+
+    if new_name != "":
+        student["name"] = new_name
+
+    if new_age != "":
+        if new_age.isdigit():
+            student["age"] = int(new_age)
+        else:
+            print("Invalid age.")
+
+    if new_course != "":
+        student["course"] = new_course
+
+    if new_status != "":
+        if new_status in ("active", "inactive"):
+            student["status"] = new_status
+        else:
+            print("Invalid status.")
+
+    save_students(students)
+    print("Student updated successfully.")
+
+
+# DELETE STUDENT
+def delete_student(students):
+    print("----- Delete Student -----")
+
+    student_id = input("Enter student ID: ").strip()
+    student = find_student_by_id(students, student_id)
+
+    if student is None:
+        print("Student not found.")
+        return
+
+    students.remove(student)
+    save_students(students)
+
+    print("Student deleted successfully.")
+
+
+# MENU
+def show_menu():
+    print("\n====== MAIN MENU ======")
+    print("1. Register student")
+    print("2. List students")
+    print("3. Search student")
+    print("4. Update student")
+    print("5. Delete student")
+    print("6. Exit")
+
+
+# MAIN
+def main():
+    students = load_students()
+
+    option = ""
+    while option != "6":
+        show_menu()
+        option = input("Choose an option: ").strip()
+
+        if option == "1":
+            register_student(students)
+        elif option == "2":
+            list_students(students)
+        elif option == "3":
+            search_student(students)
+        elif option == "4":
+            update_student(students)
+        elif option == "5":
+            delete_student(students)
+        elif option == "6":
+            print("Goodbye")
+        else:
+            print("Invalid option.")
+
+
+if __name__ == "__main__":
+    main()
 def find_student_by_id(student, student_id):
     """
     Search for a student by ID.

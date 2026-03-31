@@ -39,17 +39,6 @@ No external libraries are required.
 
 ---
 
-Installation
-
-1. Clone this repository:
-
-git clone https://github.com/your-username/student-management.git
-
-2. Navigate to the project folder:
-
-cd student-management
-
-3. Make sure the file "students.json" exists in the same directory.
 
 ---
 
@@ -90,22 +79,6 @@ This project helps you practice:
 - File handling (JSON)
 - Input validation
 - Basic program structure
-
----
-
-Future Improvements
-
-- Add graphical user interface (GUI)
-- Export data to CSV
-- Improve search filters
-- Add authentication system
-
----
-
-Author
-
-Your Name
-
 ---
 
 License
